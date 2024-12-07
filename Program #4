@@ -1,0 +1,105 @@
+import sqlite3  
+
+def initialize_database():  
+    # Create the database and table if they don't exist  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        cursor.execute('''  
+        CREATE TABLE IF NOT EXISTS Entries (  
+            id INTEGER PRIMARY KEY,  
+            name TEXT NOT NULL,  
+            phone_number TEXT NOT NULL  
+        )  
+        ''')  
+    print("Database initialized.")  
+
+def create_entry(name, phone_number):  
+    # Add a new entry to the table  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        cursor.execute('INSERT INTO Entries (name, phone_number) VALUES (?, ?)', (name, phone_number))  
+    print(f"Added: {name} with phone number {phone_number}.")  
+
+def get_phone_number(name):  
+    # Retrieve the phone number for a name  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        cursor.execute('SELECT phone_number FROM Entries WHERE name = ?', (name,))  
+        result = cursor.fetchone()  
+    if result:  
+        print(f"Phone number for {name}: {result[0]}")  
+    else:  
+        print(f"No record found for {name}.")  
+
+def modify_entry(name, new_phone_number):  
+    # Update the phone number for a name  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        update_count = cursor.execute('UPDATE Entries SET phone_number = ? WHERE name = ?', (new_phone_number, name)).rowcount  
+    if update_count:  
+        print(f"Updated phone number for {name}.")  
+    else:  
+        print(f"Entry for {name} not found.")  
+
+def remove_entry(name):  
+    # Delete an entry by name  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        delete_count = cursor.execute('DELETE FROM Entries WHERE name = ?', (name,)).rowcount  
+    if delete_count:  
+        print(f"Deleted entry for {name}.")  
+    else:  
+        print(f"No entry found for {name}.")  
+
+def show_all_entries():  
+    # Display all entries in the phonebook  
+    with sqlite3.connect('phonebook.db') as conn:  
+        cursor = conn.cursor()  
+        cursor.execute('SELECT * FROM Entries')  
+        entries = cursor.fetchall()  
+    if entries:  
+        print("Current contents of the database:")  
+        for id, name, phone_number in entries:  
+            print(f"({id}, '{name}', '{phone_number}')")  
+    else:  
+        print("The database is empty.")  
+
+def display_menu():  
+    # Show the menu options  
+    initialize_database()  
+    while True:  
+        print("\nPhonebook Menu:")  
+        print("1. Add Entry")  
+        print("2. Lookup Entry")  
+        print("3. Update Entry")  
+        print("4. Delete Entry")  
+        print("5. Show All Entries")  
+        print("6. Exit")  
+        choice = input("Select an option: ")  
+        
+        if choice == '1':  
+            name = input("Enter name: ")  
+            phone_number = input("Enter phone number: ")  
+            create_entry(name, phone_number)  
+        elif choice == '2':  
+            name = input("Enter the name to look up: ")  
+            get_phone_number(name)  
+        elif choice == '3':  
+            name = input("Enter the name to update: ")  
+            new_phone_number = input("Enter the new phone number: ")  
+            modify_entry(name, new_phone_number)  
+        elif choice == '4':  
+            name = input("Enter the name to delete: ")  
+            remove_entry(name)  
+        elif choice == '5':  
+            show_all_entries()  
+        elif choice == '6':  
+            print("Exiting the phonebook.")  
+            break  
+        else:  
+            print("Invalid choice. Please try again.")  
+
+if __name__ == '__main__':  
+    display_menu()
+
+#Jadon Anderstrom, 12/06/2024, "Phonebook"

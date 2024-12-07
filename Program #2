@@ -1,0 +1,63 @@
+import sqlite3  
+
+def main():  
+    database = 'cities_data.db'  
+    connection = sqlite3.connect(database)  
+    cursor = connection.cursor()  
+
+    create_city_table(cursor)  
+    populate_cities(cursor)  
+
+    connection.commit()  
+
+    retrieve_and_display_cities(cursor)  
+
+    connection.close()  
+
+def create_city_table(cursor):  
+    cursor.execute('DROP TABLE IF EXISTS CitiesInfo')  
+    
+    cursor.execute('''CREATE TABLE CitiesInfo (  
+                        ID INTEGER PRIMARY KEY,  
+                        Name TEXT NOT NULL,  
+                        Popul INTEGER NOT NULL)''')  
+
+def populate_cities(cursor):  
+    city_list = [  
+        (1, 'Tokyo', 38001000),  
+        (2, 'Delhi', 25703168),  
+        (3, 'Shanghai', 23740778),  
+        (4, 'Sao Paulo', 21066245),  
+        (5, 'Mumbai', 21042538),  
+        (6, 'Mexico City', 20998543),  
+        (7, 'Beijing', 20383994),  
+        (8, 'Osaka', 20237645),  
+        (9, 'Cairo', 18771769),  
+        (10, 'New York', 18593220),  
+        (11, 'Dhaka', 17598228),  
+        (12, 'Karachi', 16617644),  
+        (13, 'Buenos Aires', 15180176),  
+        (14, 'Kolkata', 14864919),  
+        (15, 'Istanbul', 14163989),  
+        (16, 'Chongqing', 13331579),  
+        (17, 'Lagos', 13122829),  
+        (18, 'Manila', 12946263),  
+        (19, 'Rio de Janeiro', 12902306),  
+        (20, 'Guangzhou', 12458130)  
+    ]  
+
+    cursor.executemany('''INSERT INTO CitiesInfo (ID, Name, Popul)   
+                          VALUES (?, ?, ?)''', city_list)  
+
+def retrieve_and_display_cities(cursor):  
+    print('List of Cities from the Database:')  
+    cursor.execute('SELECT ID, Name, Popul FROM CitiesInfo')  
+    cities = cursor.fetchall()  
+
+    for city in cities:  
+        print(f'ID: {city[0]}, City: {city[1]:<15}, Population: {city[2]:,}')  
+
+if __name__ == '__main__':  
+    main()
+
+#Jadon Anderstrom, 12/06/2024, "Cities Database"
